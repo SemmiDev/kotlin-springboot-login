@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*
 @SpringBootApplication
 class KotlinSpringbootOktaApplication
 
-fun main(arg s: Array<String>) {
+fun main(args: Array<String>) {
 	runApplication<KotlinSpringbootOktaApplication>(*args)
 }
 

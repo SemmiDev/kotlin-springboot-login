@@ -1,20 +1,11 @@
 server:
   port: 9090
 
+okta:
+  oauth2:
+    issuer: https://{oktaDomain}/oauth2/default
+    client-id: xx
+    client-secret: xx
 spring:
   thymeleaf:
     cache: false
-  security:
-    oauth2:
-      client:
-        registration:
-#          github:
-#            client-id: xxxxxxxxxxxxxxxxx
-#            client-secret: xxxxxxxxxxxxxxxxx
-          okta:
-            client-id: xxx
-            client-secret: xxx
-            client-name: Okta
-            provider:
-              okta:
-                issuer-uri: https://oktadomain/oauth2/default
