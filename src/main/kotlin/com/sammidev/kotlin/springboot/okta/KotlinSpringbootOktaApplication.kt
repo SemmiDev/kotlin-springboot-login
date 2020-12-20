@@ -25,6 +25,8 @@ class SecurityConfig() : WebSecurityConfigurerAdapter() {
 				?.authorizeRequests()
 				?.anyRequest()?.authenticated()
 				?.and()
+				?.formLogin()
+				?.and()
 				?.httpBasic()
 	}
 
