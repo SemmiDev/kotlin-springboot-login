@@ -5,11 +5,11 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.*
 
 @SpringBootApplication
 class KotlinSpringbootOktaApplication
@@ -19,15 +19,19 @@ fun main(args: Array<String>) {
 }
 
 @Configuration
+@EnableWebSecurity
 class SecurityConfig() : WebSecurityConfigurerAdapter() {
 	override fun configure(http: HttpSecurity?) {
 		http
 				?.authorizeRequests()
+				?.antMatchers("/public/**")
+				?.permitAll()
 				?.anyRequest()?.authenticated()
 				?.and()
 				?.formLogin()
-				?.and()
-				?.httpBasic()
+				?.loginPage("/login.html")
+				?.failureUrl("/login-error.html")
+				?.permitAll()
 	}
 
 	override fun configure(auth: AuthenticationManagerBuilder?) {
@@ -38,13 +42,29 @@ class SecurityConfig() : WebSecurityConfigurerAdapter() {
 	}
 }
 
-@RestController
-class Greeting {
+@Controller
+class Student {
 
-	@GetMapping("/")
+	@RequestMapping("/")
 	@ResponseBody
-	fun name(@RequestParam("name") name: String): String {
-		return "hello, ${name}"
+	fun welcome(@RequestParam("name") name: String): String {
+		return "hello, $name"
 	}
 
+	// login form
+	@RequestMapping("/login.html")
+	fun login(): String {
+		return "login.html"
+	}
+
+	// login form with error
+	@RequestMapping("/login-error.html")
+	fun loginError(model: Model): String {
+		model.addAttribute("loginError", true)
+		return "login.html"
+	}
 }
+
+
+
+
