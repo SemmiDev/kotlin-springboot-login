@@ -7,6 +7,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User
+import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -23,15 +28,12 @@ fun main(args: Array<String>) {
 class SecurityConfig() : WebSecurityConfigurerAdapter() {
 	override fun configure(http: HttpSecurity?) {
 		http
+				?.antMatcher("/**")
 				?.authorizeRequests()
-				?.antMatchers("/public/**")
-				?.permitAll()
+				?.antMatchers("/","/login**")?.permitAll()
 				?.anyRequest()?.authenticated()
 				?.and()
-				?.formLogin()
-				?.loginPage("/login.html")
-				?.failureUrl("/login-error.html")
-				?.permitAll()
+				?.oauth2Login()
 	}
 
 	override fun configure(auth: AuthenticationManagerBuilder?) {
@@ -45,26 +47,24 @@ class SecurityConfig() : WebSecurityConfigurerAdapter() {
 @Controller
 class Student {
 
-	@RequestMapping("/")
+	// template
+	@RequestMapping("/securedPage")
+	fun securePage(
+			model: Model,
+			@RegisteredOAuth2AuthorizedClient authorizedClient: OAuth2AuthorizedClient,
+			@AuthenticationPrincipal oAuth2User: OAuth2User): String {
+		model.addAttribute("userName", oAuth2User.name)
+		model.addAttribute("clientName", authorizedClient.clientRegistration.clientName)
+		model.addAttribute("userAttributes", oAuth2User.attributes)
+		return "securedPage"
+	}
+
+	@RequestMapping("/hola")
 	@ResponseBody
-	fun welcome(@RequestParam("name") name: String): String {
-		return "hello, $name"
-	}
+	fun welcome(@RequestParam("name") name: String): String =  "hello, $name"
 
-	// login form
-	@RequestMapping("/login.html")
-	fun login(): String {
-		return "login.html"
-	}
-
-	// login form with error
-	@RequestMapping("/login-error.html")
-	fun loginError(model: Model): String {
-		model.addAttribute("loginError", true)
-		return "login.html"
-	}
+	// template
+	@RequestMapping("/")
+	fun index(): String = "index"
 }
-
-
-
 

@@ -1,0 +1,13 @@
+server:
+  port: 9090
+
+spring:
+  thymeleaf:
+    cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: xxxxxxxxxxxxxxxxx
+            client-secret: xxxxxxxxxxxxxxxxx
